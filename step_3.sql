@@ -56,7 +56,7 @@ CREATE OR REPLACE TABLE macncheese_predictions AS (
         TABLE(RESULT_SCAN(-1))
 );
 
-select * from macncheese_predictions;
+SELECT * FROM MACNCHEESE_PREDICTIONS;
 
 -- Visualize the results, overlaid on top of one another: 
 SELECT
