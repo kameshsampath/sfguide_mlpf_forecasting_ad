@@ -23,34 +23,22 @@ USE WAREHOUSE quickstart_wh;
 ALTER ACCOUNT
 SET SEARCH_PATH = '$current, $public, SNOWFLAKE.ML';
 
--- Create a csv file format to be used to ingest from the stage: 
-CREATE OR REPLACE FILE FORMAT quickstart.ml_functions.csv_ff
-    type = 'csv'
-    SKIP_HEADER = 1,
-    COMPRESSION = AUTO;
+-- TODO update references to right repo
+CREATE OR REPLACE API INTEGRATION KAMESHSAMPATH_GIT_API_INTEGRATION
+  API_PROVIDER = git_https_api
+  API_ALLOWED_PREFIXES = ('https://github.com/kameshsampath')
+  ENABLED = TRUE;
 
--- Create an external stage pointing to AWS S3 for loading sales data: 
-CREATE OR REPLACE STAGE s3load 
-    COMMENT = 'Quickstart S3 Stage Connection'
-    url = 's3://sfquickstarts/frostbyte_tastybytes/mlpf_quickstart/'
-    file_format = quickstart.ml_functions.csv_ff;
+CREATE GIT REPOSITORY snowflake_labs_mlpf_forecasting_ad 
+	ORIGIN = 'https://github.com/kameshsampath/sfguide_mlpf_forecasting_ad' 
+	API_INTEGRATION = 'KAMESHSAMPATH_GIT_API_INTEGRATION';
 
-ls @s3load;
+-- refresh and fetch 
 
--- Define Tasty Byte Sales table
-CREATE OR REPLACE TABLE quickstart.ml_functions.tasty_byte_sales(
-  	DATE DATE,
-	PRIMARY_CITY VARCHAR(16777216),
-	MENU_ITEM_NAME VARCHAR(16777216),
-	TOTAL_SOLD NUMBER(17,0)
-);
+ALTER GIT REPOSITORY snowflake_labs_mlpf_forecasting_ad FETCH;
 
--- Ingest data from S3 into our table
-COPY INTO quickstart.ml_functions.tasty_byte_sales 
-    FROM @s3load/ml_functions_quickstart.csv;
-
--- View a sample of the ingested data: 
-SELECT * FROM quickstart.ml_functions.tasty_byte_sales LIMIT 100;
+-- make sure you get tests.sql and setup.sql files
+ls @snowflake_labs_mlpf_forecasting_ad/branches/main;
 
 
 
