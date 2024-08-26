@@ -1,4 +1,6 @@
 name: app_environment
 channels:
   - snowflake
-dependencies: []
+dependencies:
+  - modin=*
+  - pandas=*
